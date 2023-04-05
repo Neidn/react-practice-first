@@ -11,13 +11,15 @@ export const fetchCartData = () => {
       if (!response.ok) {
         throw new Error('Could not fetch cart data!');
       }
-
       return await response.json();
     };
 
     try {
       const cartData = await fetchData();
-      dispatch(cartActions.replaceCart(cartData));
+      dispatch(cartActions.replaceCart({
+        items: cartData.items || [],
+        totalQuantity: cartData.totalQuantity,
+      }));
     } catch (error) {
       dispatch(
           uiActions.showNotification({
@@ -43,7 +45,10 @@ export const sendCartData = (cart) => {
     const sendRequest = async () => {
       const response = await fetch(url, {
         method: 'PUT',
-        body: JSON.stringify(cart),
+        body: JSON.stringify({
+          items: cart.items,
+          totalQuantity: cart.totalQuantity,
+        }),
       });
 
       if (!response.ok) {
